@@ -24,7 +24,7 @@ public class LabWork {
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "coordinates_id", nullable = false, unique = true)
+    @JoinColumn(name = "coordinates_id", nullable = false)
     private Coordinates coordinates;
 
     @CreationTimestamp
