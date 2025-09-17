@@ -19,6 +19,7 @@ public class Coordinates {
     @Column(nullable = false)
     private Float x;
 
+    @Column(nullable = false)
     private float y;
 }
 

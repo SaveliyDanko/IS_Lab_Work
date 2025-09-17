@@ -1,4 +1,4 @@
-package com.savadanko.dto;
+package com.savadanko.domain.dto;
 
 public record DisciplineDTO(
         Long id,

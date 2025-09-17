@@ -1,4 +1,4 @@
-package com.savadanko.dto;
+package com.savadanko.domain.requests;
 
 import com.savadanko.domain.Color;
 import com.savadanko.domain.Country;

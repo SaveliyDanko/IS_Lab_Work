@@ -1,4 +1,4 @@
-package com.savadanko.dto;
+package com.savadanko.domain.requests;
 
 public record UpdateCoordinatesRequest(
         Float x,

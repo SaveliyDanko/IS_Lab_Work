@@ -1,9 +1,9 @@
 package com.savadanko.controller;
 
 import com.savadanko.domain.*;
-import com.savadanko.dto.CreateLabWorkRequest;
-import com.savadanko.dto.LabWorkDTO;
-import com.savadanko.dto.UpdateLabWorkRequest;
+import com.savadanko.domain.requests.CreateLabWorkRequest;
+import com.savadanko.domain.dto.LabWorkDTO;
+import com.savadanko.domain.requests.UpdateLabWorkRequest;
 import com.savadanko.repository.*;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;

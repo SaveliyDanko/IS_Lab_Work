@@ -2,14 +2,13 @@ package com.savadanko.controller;
 
 import com.savadanko.domain.Location;
 import com.savadanko.domain.Person;
-import com.savadanko.dto.CreatePersonRequest;
-import com.savadanko.dto.PersonDTO;
-import com.savadanko.dto.UpdatePersonRequest;
+import com.savadanko.domain.requests.CreatePersonRequest;
+import com.savadanko.domain.dto.PersonDTO;
+import com.savadanko.domain.requests.UpdatePersonRequest;
 import com.savadanko.repository.LocationRepository;
 import com.savadanko.repository.PersonRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;

@@ -1,9 +1,9 @@
 package com.savadanko.controller;
 
 import com.savadanko.domain.Discipline;
-import com.savadanko.dto.CreateDisciplineRequest;
-import com.savadanko.dto.DisciplineDTO;
-import com.savadanko.dto.UpdateDisciplineRequest;
+import com.savadanko.domain.requests.CreateDisciplineRequest;
+import com.savadanko.domain.dto.DisciplineDTO;
+import com.savadanko.domain.requests.UpdateDisciplineRequest;
 import com.savadanko.repository.DisciplineRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;

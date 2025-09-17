@@ -1,4 +1,4 @@
-package com.savadanko.dto;
+package com.savadanko.domain.requests;
 
 import com.savadanko.domain.Difficulty;
 import jakarta.validation.constraints.NotBlank;

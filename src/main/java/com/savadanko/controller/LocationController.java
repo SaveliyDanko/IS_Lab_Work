@@ -1,9 +1,9 @@
 package com.savadanko.controller;
 
 import com.savadanko.domain.Location;
-import com.savadanko.dto.CreateLocationRequest;
-import com.savadanko.dto.LocationDTO;
-import com.savadanko.dto.UpdateLocationRequest;
+import com.savadanko.domain.requests.CreateLocationRequest;
+import com.savadanko.domain.dto.LocationDTO;
+import com.savadanko.domain.requests.UpdateLocationRequest;
 import com.savadanko.repository.LocationRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
