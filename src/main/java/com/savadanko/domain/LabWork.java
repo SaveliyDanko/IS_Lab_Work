@@ -45,7 +45,7 @@ public class LabWork {
     private Long minimalPoint;
 
     @OneToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "author_id", unique = true)
+    @JoinColumn(name = "author_id")
     private Person author;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
