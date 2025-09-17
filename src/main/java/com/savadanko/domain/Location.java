@@ -6,10 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "location")
@@ -31,9 +27,5 @@ public class Location {
     @NotBlank
     @Column(nullable = false)
     private String name;
-
-    @OneToMany(mappedBy = "location")
-    @JsonIgnore
-    private List<Person> people = new ArrayList<>();
 }
 
