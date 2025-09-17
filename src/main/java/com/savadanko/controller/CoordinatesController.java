@@ -1,6 +1,7 @@
 package com.savadanko.controller;
 
 import com.savadanko.domain.Coordinates;
+import com.savadanko.domain.dto.CoordinatesDTO;
 import com.savadanko.domain.requests.CreateCoordinatesRequest;
 import com.savadanko.domain.requests.UpdateCoordinatesRequest;
 import com.savadanko.repository.CoordinatesRepository;
@@ -25,37 +26,42 @@ public class CoordinatesController {
 
     @GetMapping
     @Operation(summary = "Список координат")
-    public List<Coordinates> findAll() {
-        return repo.findAll();
+    public List<CoordinatesDTO> findAll() {
+        return repo.findAll().stream()
+                .map(this::toDto)
+                .toList();
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Найти координаты по id")
-    public Coordinates findById(@PathVariable Long id) {
-        return repo.findById(id)
+    @Operation(summary = "Найти координаты по id (DTO)")
+    public CoordinatesDTO findById(@PathVariable Long id) {
+        Coordinates c = repo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Coordinates not found"));
+        return toDto(c);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
     @Operation(summary = "Создать координаты")
-    public Coordinates create(@Valid @RequestBody CreateCoordinatesRequest req) {
+    public CoordinatesDTO create(@Valid @RequestBody CreateCoordinatesRequest req) {
         Coordinates c = new Coordinates();
         c.setX(req.x());
         c.setY(req.y());
-        return repo.save(c);
+        return toDto(repo.save(c));
     }
 
     @PutMapping("/{id}")
     @Transactional
     @Operation(summary = "Обновить координаты")
-    public Coordinates update(@PathVariable Long id, @Valid @RequestBody UpdateCoordinatesRequest req) {
+    public CoordinatesDTO update(@PathVariable Long id, @Valid @RequestBody UpdateCoordinatesRequest req) {
         Coordinates c = repo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Coordinates not found"));
+
         if (req.x() != null) c.setX(req.x());
         if (req.y() != null) c.setY(req.y());
-        return c;
+
+        return toDto(c);
     }
 
     @DeleteMapping("/{id}")
@@ -67,6 +73,10 @@ public class CoordinatesController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Coordinates not found");
         }
         repo.deleteById(id);
+    }
+
+    private CoordinatesDTO toDto(Coordinates c) {
+        return new CoordinatesDTO(c.getId(), c.getX(), c.getY());
     }
 }
 
