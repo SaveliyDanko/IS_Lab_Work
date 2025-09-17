@@ -2,6 +2,8 @@ package com.savadanko.controller;
 
 import com.savadanko.domain.Location;
 import com.savadanko.domain.Person;
+import com.savadanko.domain.dto.LocationDTO;
+import com.savadanko.domain.dto.PersonFullDTO;
 import com.savadanko.domain.requests.CreatePersonRequest;
 import com.savadanko.domain.dto.PersonDTO;
 import com.savadanko.domain.requests.UpdatePersonRequest;
@@ -30,26 +32,44 @@ public class PersonController {
 
     @GetMapping
     @Transactional(readOnly = true)
-    @Operation(summary = "Список персон (DTO)")
+    @Operation(summary = "Список персон")
     public List<PersonDTO> findAll() {
         return perRepo.findAll().stream()
                 .map(this::toDto)
                 .toList();
     }
 
+    @GetMapping("/full")
+    @Transactional(readOnly = true)
+    @Operation(summary = "Список персон (полная структура с локацией)")
+    public List<PersonFullDTO> findAllFull() {
+        return perRepo.findAll().stream()
+                .map(this::toFullDto)
+                .toList();
+    }
+
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
-    @Operation(summary = "Найти персону по id (DTO)")
+    @Operation(summary = "Найти персону по id")
     public PersonDTO findById(@PathVariable Long id) {
         Person p = perRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found"));
         return toDto(p);
     }
 
+    @GetMapping("/{id}/full")
+    @Transactional(readOnly = true)
+    @Operation(summary = "Персона по id (полная структура с локацией)")
+    public PersonFullDTO findFullById(@PathVariable Long id) {
+        Person p = perRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found"));
+        return toFullDto(p);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Transactional
-    @Operation(summary = "Создать персону (с optional locationId) и вернуть DTO")
+    @Operation(summary = "Создать персону")
     public PersonDTO create(@Valid @RequestBody CreatePersonRequest req) {
         Person p = new Person();
         p.setName(req.name());
@@ -71,7 +91,7 @@ public class PersonController {
 
     @PutMapping("/{id}")
     @Transactional
-    @Operation(summary = "Обновить персону и вернуть DTO")
+    @Operation(summary = "Обновить персону")
     public PersonDTO update(@PathVariable Long id, @Valid @RequestBody UpdatePersonRequest req) {
         Person p = perRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Person not found"));
@@ -118,6 +138,23 @@ public class PersonController {
                 p.getNationality(),
                 locId,
                 locName
+        );
+    }
+
+    private PersonFullDTO toFullDto(Person p) {
+        LocationDTO lDto = null;
+        Location loc = p.getLocation();
+        if (loc != null) {
+            lDto = new LocationDTO(loc.getId(), loc.getName(), loc.getX(), loc.getY());
+        }
+        return new PersonFullDTO(
+                p.getId(),
+                p.getName(),
+                p.getEyeColor(),
+                p.getHairColor(),
+                p.getWeight(),
+                p.getNationality(),
+                lDto
         );
     }
 }

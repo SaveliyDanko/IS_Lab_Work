@@ -33,7 +33,7 @@ public class CoordinatesController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Найти координаты по id (DTO)")
+    @Operation(summary = "Найти координаты по id")
     public CoordinatesDTO findById(@PathVariable Long id) {
         Coordinates c = repo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Coordinates not found"));

@@ -1,8 +1,8 @@
 package com.savadanko.controller;
 
 import com.savadanko.domain.*;
+import com.savadanko.domain.dto.*;
 import com.savadanko.domain.requests.CreateLabWorkRequest;
-import com.savadanko.domain.dto.LabWorkDTO;
 import com.savadanko.domain.requests.UpdateLabWorkRequest;
 import com.savadanko.repository.*;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,6 +44,15 @@ public class LabWorkController {
                 .toList();
     }
 
+    @GetMapping("/full")
+    @Operation(summary = "Список всех лабораторных работ (полная древовидная структура)")
+    @Transactional(readOnly = true)
+    public List<LabWorkFullDTO> findAllFull() {
+        return labWorkRepo.findAll().stream()
+                .map(this::toFullDto)
+                .toList();
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Найти лабораторную работу по id")
     @Transactional(readOnly = true)
@@ -51,6 +60,15 @@ public class LabWorkController {
         LabWork lw = labWorkRepo.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LabWork not found"));
         return toDto(lw);
+    }
+
+    @GetMapping("/{id}/full")
+    @Operation(summary = "Лабораторная работа по id (полная древовидная структура)")
+    @Transactional(readOnly = true)
+    public LabWorkFullDTO findFullById(@PathVariable Long id) {
+        LabWork lw = labWorkRepo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "LabWork not found"));
+        return toFullDto(lw);
     }
 
     @PostMapping
@@ -154,6 +172,52 @@ public class LabWorkController {
                 authorName,
                 disciplineId,
                 disciplineName
+        );
+    }
+
+    private LabWorkFullDTO toFullDto(LabWork lw) {
+        CoordinatesDTO coord = null;
+        if (lw.getCoordinates() != null) {
+            var c = lw.getCoordinates();
+            // если у тебя y в сущности primitive float — автоупаковка сработает
+            coord = new CoordinatesDTO(c.getId(), c.getX(), c.getY());
+        }
+
+        DisciplineDTO disc = null;
+        if (lw.getDiscipline() != null) {
+            var d = lw.getDiscipline();
+            disc = new DisciplineDTO(d.getId(), d.getName(), d.getPracticeHours(), d.getLabsCount());
+        }
+
+        PersonFullDTO author = null;
+        if (lw.getAuthor() != null) {
+            var p = lw.getAuthor();
+            LocationDTO locDto = null;
+            if (p.getLocation() != null) {
+                var l = p.getLocation();
+                locDto = new LocationDTO(l.getId(), l.getName(), l.getX(), l.getY());
+            }
+            author = new PersonFullDTO(
+                    p.getId(),
+                    p.getName(),
+                    p.getEyeColor(),
+                    p.getHairColor(),
+                    p.getWeight(),
+                    p.getNationality(),
+                    locDto
+            );
+        }
+
+        return new LabWorkFullDTO(
+                lw.getId(),
+                lw.getName(),
+                lw.getDescription(),
+                lw.getDifficulty(),
+                lw.getMinimalPoint(),
+                lw.getCreationDate(),
+                coord,
+                author,
+                disc
         );
     }
 }
