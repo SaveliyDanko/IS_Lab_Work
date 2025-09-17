@@ -1,16 +1,13 @@
 package com.savadanko.controller;
 
-import com.savadanko.domain.Coordinates;
 import com.savadanko.domain.dto.CoordinatesDTO;
 import com.savadanko.domain.requests.CreateCoordinatesRequest;
 import com.savadanko.domain.requests.UpdateCoordinatesRequest;
-import com.savadanko.repository.CoordinatesRepository;
+import com.savadanko.service.CoordinatesService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -18,65 +15,41 @@ import java.util.List;
 @RequestMapping("/api/coordinates")
 public class CoordinatesController {
 
-    private final CoordinatesRepository repo;
+    private final CoordinatesService service;
 
-    public CoordinatesController(CoordinatesRepository repo) {
-        this.repo = repo;
+    public CoordinatesController(CoordinatesService service) {
+        this.service = service;
     }
 
     @GetMapping
     @Operation(summary = "Список координат")
     public List<CoordinatesDTO> findAll() {
-        return repo.findAll().stream()
-                .map(this::toDto)
-                .toList();
+        return service.findAll();
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Найти координаты по id")
     public CoordinatesDTO findById(@PathVariable Long id) {
-        Coordinates c = repo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Coordinates not found"));
-        return toDto(c);
+        return service.findById(id);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Transactional
     @Operation(summary = "Создать координаты")
     public CoordinatesDTO create(@Valid @RequestBody CreateCoordinatesRequest req) {
-        Coordinates c = new Coordinates();
-        c.setX(req.x());
-        c.setY(req.y());
-        return toDto(repo.save(c));
+        return service.create(req);
     }
 
     @PutMapping("/{id}")
-    @Transactional
     @Operation(summary = "Обновить координаты")
     public CoordinatesDTO update(@PathVariable Long id, @Valid @RequestBody UpdateCoordinatesRequest req) {
-        Coordinates c = repo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Coordinates not found"));
-
-        if (req.x() != null) c.setX(req.x());
-        if (req.y() != null) c.setY(req.y());
-
-        return toDto(c);
+        return service.update(id, req);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Transactional
     @Operation(summary = "Удалить координаты")
     public void delete(@PathVariable Long id) {
-        if (!repo.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Coordinates not found");
-        }
-        repo.deleteById(id);
-    }
-
-    private CoordinatesDTO toDto(Coordinates c) {
-        return new CoordinatesDTO(c.getId(), c.getX(), c.getY());
+        service.delete(id);
     }
 }
-
