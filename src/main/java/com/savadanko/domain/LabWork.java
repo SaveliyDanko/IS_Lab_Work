@@ -23,7 +23,7 @@ public class LabWork {
     @Column(nullable = false)
     private String name;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "coordinates_id", nullable = false, unique = true)
     private Coordinates coordinates;
 

@@ -22,7 +22,7 @@ public class LocationController {
     }
 
     @GetMapping
-    @Operation(summary = "Список всех локаций (DTO)")
+    @Operation(summary = "Список всех локаций")
     public List<LocationDTO> findAll() {
         return service.findAll();
     }
