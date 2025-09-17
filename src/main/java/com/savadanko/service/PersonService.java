@@ -8,6 +8,8 @@ import com.savadanko.domain.dto.PersonDTO;
 import com.savadanko.domain.dto.PersonFullDTO;
 import com.savadanko.domain.requests.CreatePersonRequest;
 import com.savadanko.domain.requests.UpdatePersonRequest;
+import com.savadanko.exceptions.ConflictException;
+import com.savadanko.repository.LabWorkRepository;
 import com.savadanko.repository.LocationRepository;
 import com.savadanko.repository.PersonRepository;
 import com.savadanko.exceptions.NotFoundException;
@@ -21,10 +23,12 @@ public class PersonService {
 
     private final PersonRepository perRepo;
     private final LocationRepository locRepo;
+    private final LabWorkRepository labWorkRepo;
 
-    public PersonService(PersonRepository perRepo, LocationRepository locRepo) {
+    public PersonService(PersonRepository perRepo, LocationRepository locRepo, LabWorkRepository labWorkRepo) {
         this.perRepo = perRepo;
         this.locRepo = locRepo;
+        this.labWorkRepo = labWorkRepo;
     }
 
     @Transactional(readOnly = true)
@@ -92,6 +96,9 @@ public class PersonService {
     @Transactional
     public void delete(Long id) {
         if (!perRepo.existsById(id)) throw new NotFoundException("Person not found");
+        if (labWorkRepo.existsByAuthorId(id)) {
+            throw new ConflictException("Person is used as LabWork author. Delete related LabWorks first.");
+        }
         perRepo.deleteById(id);
     }
 

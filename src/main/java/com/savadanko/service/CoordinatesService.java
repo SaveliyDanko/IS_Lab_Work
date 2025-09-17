@@ -4,7 +4,10 @@ import com.savadanko.domain.Coordinates;
 import com.savadanko.domain.dto.CoordinatesDTO;
 import com.savadanko.domain.requests.CreateCoordinatesRequest;
 import com.savadanko.domain.requests.UpdateCoordinatesRequest;
+import com.savadanko.exceptions.ConflictException;
+import com.savadanko.exceptions.NotFoundException;
 import com.savadanko.repository.CoordinatesRepository;
+import com.savadanko.repository.LabWorkRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,9 +17,11 @@ import java.util.List;
 public class CoordinatesService {
 
     private final CoordinatesRepository repo;
+    private final LabWorkRepository labWorkRepo;
 
-    public CoordinatesService(CoordinatesRepository repo) {
+    public CoordinatesService(CoordinatesRepository repo, LabWorkRepository labWorkRepo) {
         this.repo = repo;
+        this.labWorkRepo = labWorkRepo;
     }
 
     @Transactional(readOnly = true)
@@ -54,8 +59,9 @@ public class CoordinatesService {
 
     @Transactional
     public void delete(Long id) {
-        if (!repo.existsById(id)) {
-            throw new com.savadanko.exceptions.NotFoundException("Coordinates not found");
+        if (!repo.existsById(id)) throw new NotFoundException("Coordinates not found");
+        if (labWorkRepo.existsByCoordinatesId(id)) {
+            throw new ConflictException("Coordinates are used by LabWork(s). Delete related LabWorks first.");
         }
         repo.deleteById(id);
     }

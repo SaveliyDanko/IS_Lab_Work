@@ -4,8 +4,10 @@ import com.savadanko.domain.Location;
 import com.savadanko.domain.requests.CreateLocationRequest;
 import com.savadanko.domain.dto.LocationDTO;
 import com.savadanko.domain.requests.UpdateLocationRequest;
+import com.savadanko.exceptions.ConflictException;
 import com.savadanko.repository.LocationRepository;
 import com.savadanko.exceptions.NotFoundException;
+import com.savadanko.repository.PersonRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +17,11 @@ import java.util.List;
 public class LocationService {
 
     private final LocationRepository repo;
+    private final PersonRepository personRepo;
 
-    public LocationService(LocationRepository repo) {
+    public LocationService(LocationRepository repo, PersonRepository personRepo) {
         this.repo = repo;
+        this.personRepo = personRepo;
     }
 
     @Transactional(readOnly = true)
@@ -60,6 +64,9 @@ public class LocationService {
     public void delete(Long id) {
         if (!repo.existsById(id)) {
             throw new NotFoundException("Location not found");
+        }
+        if (personRepo.existsByLocationId(id)) {
+            throw new ConflictException("Location is in use by one or more persons. Delete persons first.");
         }
         repo.deleteById(id);
     }
